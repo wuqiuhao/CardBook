@@ -45,13 +45,8 @@ class CollectionViewCell: UICollectionViewCell {
         var rotateTransform: CGAffineTransform!
         if delta < 0 {
             // move to left
-            transformView.layer.position = CGPoint(x: center.x - frame.size.width / 2 - frame.origin.x, y: frame.size.height)
-            transformView.layoutIfNeeded()
-            transformView.layer.anchorPoint = CGPoint(x: 0, y: 1)
             rotateTransform = CGAffineTransform(rotationAngle: -CGFloat(M_PI / 12) * percent)
         } else {
-            transformView.layer.position = CGPoint(x: center.x + frame.size.width / 2 - frame.origin.x, y: frame.size.height)
-            transformView.layer.anchorPoint = CGPoint(x: 1, y: 1)
             rotateTransform = CGAffineTransform(rotationAngle: CGFloat(M_PI / 12) * percent)
         }
         let scaleTransform = CGAffineTransform(scaleX: scale, y: scale)
@@ -108,6 +103,7 @@ class CollectionViewController: UIViewController {
         let cardLayout = CollectionViewLayout()
         cardLayout.itemSize = CGSize(width: UIScreen.main.bounds.width - 32, height: UIScreen.main.bounds.height - 200)
         collectionView!.setCollectionViewLayout(cardLayout, animated: true)
+        collectionView!.contentInset = UIEdgeInsets(top: 30, left: 0, bottom: 0, right: 0)
         collectionView!.scrollToItem(at: IndexPath(row: collectionView!.numberOfItems(inSection: 0) - 1, section: 0), at: .bottom, animated: false)
     }
 }

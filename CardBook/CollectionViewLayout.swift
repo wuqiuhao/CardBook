@@ -32,24 +32,43 @@ class CollectionViewLayout: UICollectionViewFlowLayout {
         return array
     }
     
+//    else {
+//    if delta < CGFloat(indexPath.row - cellCount + visibleCount) * margin {
+//    centerY = collectionView!.contentOffset.y + itemSize.height / 2 + CGFloat(indexPath.row - cellCount + visibleCount) * margin
+//    }
+//    }
+    
     override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
         let attributes = UICollectionViewLayoutAttributes(forCellWith: indexPath)
         attributes.size = itemSize
         let baseCenterY = itemSize.height / 2 + CGFloat(indexPath.row) * margin
         var centerY = baseCenterY
         attributes.zIndex = indexPath.row
-//        let offsetY = margin * CGFloat(cellCount - visibleCount) - collectionView!.contentOffset.y
+        let offsetY = margin * CGFloat(cellCount - visibleCount) - collectionView!.contentOffset.y
         let delta = centerY - collectionView!.contentOffset.y - itemSize.height / 2
-        let ratio = pow(delta / margin, 3) / 20
-        let offset = ratio * itemSize.height / 2
-        var scale = 0.9 + 1.0 * ratio
-        centerY = baseCenterY + offset
+        let ratio = delta / margin
+        if ratio > 0 {
+            let offset = pow(ratio, 3) / 20 * offsetY
+            centerY = baseCenterY + offset
+        }
+        
+        
         print("delta:\(delta) row:\(indexPath.row)")
+        print("offset:\(offsetY)")
         if delta < 0 {
             centerY = collectionView!.contentOffset.y + itemSize.height / 2
+            if indexPath.row < cellCount - visibleCount {
+                attributes.alpha = delta > -margin ? 1 : 0
+            }
         }
-        if scale > 1 { scale = 1}
-//        attributes.transform = CGAffineTransform(scaleX: scale, y: scale)
+        if centerY - collectionView!.contentOffset.y > itemSize.height / 2 + itemSize.height / 3 * CGFloat(indexPath.row) {
+            centerY = itemSize.height / 2 + CGFloat(indexPath.row) *  itemSize.height / 3 + collectionView!.contentOffset.y
+        }
+        var r = delta / 30
+        if r < 0 { r = 0 }
+        if r > 1 { r = 1 }
+        let scale = 0.9 + r * 0.1
+        attributes.transform = CGAffineTransform(scaleX: scale, y: 1)
         attributes.center = CGPoint(x: collectionView!.frame.width / 2, y: centerY)
         return attributes
     }
