@@ -8,8 +8,7 @@
 
 import UIKit
 
-class CollectionViewLayout: UICollectionViewLayout {
-    var itemSize: CGSize!
+class CollectionViewLayout: UICollectionViewFlowLayout {
     var visibleCount = 3
     var cellCount: Int!
     var margin: CGFloat = 15
@@ -20,19 +19,12 @@ class CollectionViewLayout: UICollectionViewLayout {
     }
     
     override var collectionViewContentSize: CGSize {
-        return CGSize(width: collectionView!.frame.width, height: itemSize.height + CGFloat(cellCount - 1) * margin)
+        return CGSize(width: collectionView!.frame.width, height: itemSize.height + CGFloat(cellCount - visibleCount) * margin)
     }
     
     override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
         var array = [UICollectionViewLayoutAttributes]()
-        let offsetY = CGFloat(cellCount - visibleCount + 1) * margin - collectionView!.contentOffset.y
-        var begin = cellCount - visibleCount
-        var end = cellCount!
-        if offsetY > 0 {
-            begin = max(cellCount - visibleCount - Int(offsetY / margin) , 0)
-            end = min(cellCount,cellCount + visibleCount)
-        }
-        for i in begin..<end {
+        for i in 0..<cellCount {
             let indexPath = IndexPath(item: i, section: 0)
             let attributes = layoutAttributesForItem(at: indexPath)!
             array.append(attributes)
@@ -45,26 +37,19 @@ class CollectionViewLayout: UICollectionViewLayout {
         attributes.size = itemSize
         let baseCenterY = itemSize.height / 2 + CGFloat(indexPath.row) * margin
         var centerY = baseCenterY
-        let cY = itemSize.height / 2 + collectionView!.contentOffset.y
-        let offsetY = CGFloat(cellCount - visibleCount) * margin - collectionView!.contentOffset.y
-        var delta = centerY - cY
-        let ratio = delta / margin
-        if offsetY >= 0 {
-            if ratio <= 0 {
-                attributes.alpha = ratio + 1
-            }
-        }
-        let n = CGFloat(visibleCount - 1)
-        if ratio > n {
-            let offset = (ratio - n) * delta
-            centerY = offset + baseCenterY
-        }
-        if delta < 0 { delta = 0 }
-        var scale = delta / 70 * 0.1 + 0.9
-        if scale > 1 { scale = 1 }
-        attributes.transform = CGAffineTransform(scaleX: scale, y: 1)
-//        print("delta:\(delta) offsetY:\(offsetY) row:\(indexPath.row)")
         attributes.zIndex = indexPath.row
+//        let offsetY = margin * CGFloat(cellCount - visibleCount) - collectionView!.contentOffset.y
+        let delta = centerY - collectionView!.contentOffset.y - itemSize.height / 2
+        let ratio = pow(delta / margin, 3) / 20
+        let offset = ratio * itemSize.height / 2
+        var scale = 0.9 + 1.0 * ratio
+        centerY = baseCenterY + offset
+        print("delta:\(delta) row:\(indexPath.row)")
+        if delta < 0 {
+            centerY = collectionView!.contentOffset.y + itemSize.height / 2
+        }
+        if scale > 1 { scale = 1}
+//        attributes.transform = CGAffineTransform(scaleX: scale, y: scale)
         attributes.center = CGPoint(x: collectionView!.frame.width / 2, y: centerY)
         return attributes
     }

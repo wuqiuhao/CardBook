@@ -16,46 +16,60 @@ class CollectionViewCell: UICollectionViewCell {
     
     var removeItem: (()->Void)!
     
+    var pan: UIPanGestureRecognizer!
+    
     func config() {
+        transformView.alpha = 1
         transformView.frame = CGRect(origin: .zero, size: CGSize(width: UIScreen.main.bounds.width - 32, height: frame.height))
     }
     
     func commonInit() {
         transformView = UIView()
         transformView.backgroundColor = UIColor.white
-        transformView.layer.cornerRadius = 2
+        transformView.layer.cornerRadius = 10
         transformView.layer.shadowColor = UIColor.black.cgColor
         transformView.layer.shadowRadius = 5
         transformView.layer.shadowOpacity = 0.1
-        let pan = UIPanGestureRecognizer(target: self, action: #selector(panItem(_:)))
+        pan = UIPanGestureRecognizer(target: self, action: #selector(panItem(_:)))
+        pan.delegate = self
         transformView.isUserInteractionEnabled = true
         transformView.addGestureRecognizer(pan)
-        transformView.layer.anchorPoint = CGPoint(x: 0.2, y: 0.9)
         addSubview(transformView)
     }
     
-    func panItem(_ gesture: UIPanGestureRecognizer) {
-        let delta = gesture.translation(in: self).x
+    func panItem(_ gesture: UILongPressGestureRecognizer) {
+        let delta = pan.translation(in: self).x
         var percent = abs(delta) / (frame.width / 2)
         if percent > 1 { percent = 1 }
-        let scale = 0.8 + 0.2 * (1 - percent)
+        let scale = 0.6 + 0.4 * (1 - percent)
         var rotateTransform: CGAffineTransform!
         if delta < 0 {
             // move to left
-            transformView.layer.anchorPoint = CGPoint(x: 0.2, y: 0.9)
-            rotateTransform = CGAffineTransform(rotationAngle: -CGFloat(M_PI / 6) * percent)
+            transformView.layer.position = CGPoint(x: center.x - frame.size.width / 2 - frame.origin.x, y: frame.size.height)
+            transformView.layoutIfNeeded()
+            transformView.layer.anchorPoint = CGPoint(x: 0, y: 1)
+            rotateTransform = CGAffineTransform(rotationAngle: -CGFloat(M_PI / 12) * percent)
         } else {
-            transformView.layer.anchorPoint = CGPoint(x: 0.2, y: 0.9)
-            rotateTransform = CGAffineTransform(rotationAngle: -CGFloat(M_PI / 6) * percent)
+            transformView.layer.position = CGPoint(x: center.x + frame.size.width / 2 - frame.origin.x, y: frame.size.height)
+            transformView.layer.anchorPoint = CGPoint(x: 1, y: 1)
+            rotateTransform = CGAffineTransform(rotationAngle: CGFloat(M_PI / 12) * percent)
         }
         let scaleTransform = CGAffineTransform(scaleX: scale, y: scale)
-        let transforms = scaleTransform.concatenating(rotateTransform)
+        let moveTransform = CGAffineTransform(translationX: delta, y: 0)
+        let transforms = scaleTransform.concatenating(rotateTransform).concatenating(moveTransform)
         transformView.transform = transforms
-        alpha = 1 - percent
+        transformView.alpha = 1 - percent
         if gesture.state == .ended {
             if percent > 0.5 {
-                transformView.removeFromSuperview()
+                transformView.alpha = 0
+                transformView.transform = CGAffineTransform.identity
+                transformView.layer.position = center
                 removeItem()
+            } else {
+                UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseInOut, animations: { 
+                    self.transformView.transform = CGAffineTransform.identity
+                    self.transformView.alpha = 1
+                })
             }
         }
     }
@@ -71,6 +85,18 @@ class CollectionViewCell: UICollectionViewCell {
     }
 }
 
+extension CollectionViewCell: UIGestureRecognizerDelegate {
+    override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        if gestureRecognizer == pan {
+            let transition = pan.translation(in: self)
+            if abs(transition.x) > abs(transition.y) {
+                return true
+            }
+        }
+        return false
+    }
+}
+
 class CollectionViewController: UIViewController {
     
     @IBOutlet weak var collectionView: UICollectionView!
@@ -80,11 +106,8 @@ class CollectionViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         let cardLayout = CollectionViewLayout()
-        cardLayout.visibleCount = 3
-        cardLayout.margin = 15
-        cardLayout.itemSize = CGSize(width: UIScreen.main.bounds.width - 32, height: UIScreen.main.bounds.height - 200 - CGFloat(cardLayout.visibleCount - 1) * cardLayout.margin)
+        cardLayout.itemSize = CGSize(width: UIScreen.main.bounds.width - 32, height: UIScreen.main.bounds.height - 200)
         collectionView!.setCollectionViewLayout(cardLayout, animated: true)
-        collectionView!.contentInset = UIEdgeInsets(top: cardLayout.margin * 3, left: 0, bottom: 0, right: 0)
         collectionView!.scrollToItem(at: IndexPath(row: collectionView!.numberOfItems(inSection: 0) - 1, section: 0), at: .bottom, animated: false)
     }
 }
@@ -106,7 +129,9 @@ extension CollectionViewController: UICollectionViewDataSource, UICollectionView
         cell.config()
         cell.removeItem = {
             self.dataArray.remove(at: indexPath.row)
+            print("Did remove item \(indexPath.row).")
             collectionView.deleteItems(at: [indexPath])
+            collectionView.reloadSections([indexPath.section])
         }
         return cell
     }
