@@ -101,9 +101,8 @@ class CollectionViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         let cardLayout = CollectionViewLayout()
-        cardLayout.itemSize = CGSize(width: UIScreen.main.bounds.width - 32, height: UIScreen.main.bounds.height - 200)
+        cardLayout.itemSize = CGSize(width: UIScreen.main.bounds.width - 32, height: 1.4*(UIScreen.main.bounds.width - 32))
         collectionView!.setCollectionViewLayout(cardLayout, animated: true)
-        collectionView!.contentInset = UIEdgeInsets(top: 30, left: 0, bottom: 0, right: 0)
         collectionView!.scrollToItem(at: IndexPath(row: collectionView!.numberOfItems(inSection: 0) - 1, section: 0), at: .bottom, animated: false)
     }
 }
