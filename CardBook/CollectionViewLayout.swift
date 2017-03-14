@@ -36,7 +36,6 @@ class CollectionViewLayout: UICollectionViewFlowLayout {
     }
     
     override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
-        print(collectionView!.contentOffset.y)
         let attributes = UICollectionViewLayoutAttributes(forCellWith: indexPath)
         attributes.size = itemSize
         let baseCenterY = itemSize.height / 2 + CGFloat(indexPath.row) * margin

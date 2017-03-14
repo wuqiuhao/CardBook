@@ -56,10 +56,9 @@ class CollectionViewCell: UICollectionViewCell {
         transformView.alpha = 1 - percent
         if gesture.state == .ended {
             if percent > 0.5 {
+                removeItem()
                 transformView.alpha = 0
                 transformView.transform = CGAffineTransform.identity
-                transformView.layer.position = center
-                removeItem()
             } else {
                 UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseInOut, animations: { 
                     self.transformView.transform = CGAffineTransform.identity
