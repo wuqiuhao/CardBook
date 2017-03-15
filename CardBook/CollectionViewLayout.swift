@@ -2,10 +2,9 @@
 //  CollectionViewLayout.swift
 //  CardBook
 //
-//  Created by Hale on 2017/3/12.
+//  Created by Hale on 2017/3/8.
 //  Copyright © 2017年 Hale. All rights reserved.
 //
-
 import UIKit
 
 class CollectionViewLayout: UICollectionViewFlowLayout {
@@ -41,13 +40,12 @@ class CollectionViewLayout: UICollectionViewFlowLayout {
     }
     
     override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
-        let attributes = UICollectionViewLayoutAttributes(forCellWith: indexPath)
-        print(collectionView!.contentOffset.y)
         if collectionView!.contentOffset.y >= 0 {
             collectionView!.contentInset = .zero
         } else {
             collectionView!.contentInset = UIEdgeInsets(top: CGFloat(visibleCount) * margin, left: 0, bottom: 0, right: 0)
         }
+        let attributes = UICollectionViewLayoutAttributes(forCellWith: indexPath)
         attributes.size = itemSize
         let baseCenterY = itemSize.height / 2 + CGFloat(indexPath.row) * margin
         var centerY = baseCenterY
@@ -77,7 +75,12 @@ class CollectionViewLayout: UICollectionViewFlowLayout {
             centerY -= scaleDeltaY
         }
         attributes.transform = CGAffineTransform(scaleX: scale, y: scale)
-        attributes.center = CGPoint(x: collectionView!.frame.width / 2, y: centerY)
+        attributes.center = CGPoint(x: collectionView!.frame.width / 2, y: centerY+sectionInset.top)
+        if collectionView!.contentOffset.y + collectionView!.contentInset.top <= 0 {
+            attributes.center.y = attributes.center.y - collectionView!.contentOffset.y - collectionView!.contentInset.top
+        }
+    
+        // TODO:Animation
         
         return attributes
     }

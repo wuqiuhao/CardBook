@@ -33,7 +33,7 @@ class CollectionViewCell: UICollectionViewCell {
         pan = UIPanGestureRecognizer(target: self, action: #selector(panItem(_:)))
         pan.delegate = self
         contentView.isUserInteractionEnabled = true
-        contentView.addGestureRecognizer(pan)
+//        contentView.addGestureRecognizer(pan)
     }
     
     func panItem(_ gesture: UILongPressGestureRecognizer) {
@@ -95,7 +95,7 @@ extension CollectionViewCell: UIGestureRecognizerDelegate {
 class CollectionViewController: UIViewController {
     
     @IBOutlet weak var collectionView: UICollectionView!
-    
+    var panGsture: UIPanGestureRecognizer!
     var dataArray = [9,8,7,6,5,4,3,2,1,0]
     
     override func viewDidLoad() {
@@ -104,6 +104,33 @@ class CollectionViewController: UIViewController {
         cardLayout.itemSize = CGSize(width: UIScreen.main.bounds.width - 32, height: 1.4*(UIScreen.main.bounds.width - 32))
         collectionView!.setCollectionViewLayout(cardLayout, animated: true)
         collectionView!.scrollToItem(at: IndexPath(row: collectionView!.numberOfItems(inSection: 0) - 1, section: 0), at: .bottom, animated: false)
+        panGsture = UIPanGestureRecognizer(target: self, action: #selector(pan(_:)))
+        panGsture.delegate = self
+        collectionView.addGestureRecognizer(panGsture)
+    }
+    
+    func pan(_ gesture: UIPanGestureRecognizer) {
+        let point = gesture.location(in: collectionView)
+        guard let gestureView = gesture.view,
+            let hintView = gestureView.hitTest(point, with: nil),
+            let superview = hintView.superview,
+            let cell = superview as? UICollectionViewCell,
+            let indexPath = collectionView.indexPath(for: cell) else {
+                return
+        }
+        collectionView.layoutAttributesForItem(at: indexPath)
+    }
+}
+
+extension CollectionViewController: UIGestureRecognizerDelegate {
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        if gestureRecognizer == panGsture {
+            let transition = panGsture.translation(in: view)
+            if abs(transition.x) > abs(transition.y) {
+                return true
+            }
+        }
+        return false
     }
 }
 
@@ -128,6 +155,7 @@ extension CollectionViewController: UICollectionViewDataSource, UICollectionView
             collectionView.deleteItems(at: [indexPath])
             collectionView.reloadSections([indexPath.section])
         }
+        print(cell.frame)
         return cell
     }
     
