@@ -19,22 +19,21 @@ class CollectionViewCell: UICollectionViewCell {
     var pan: UIPanGestureRecognizer!
     
     func config() {
-        transformView.alpha = 1
-        transformView.frame = CGRect(origin: .zero, size: CGSize(width: UIScreen.main.bounds.width - 32, height: frame.height))
+//        transformView.alpha = 1
+//        transformView.frame = CGRect(origin: .zero, size: CGSize(width: UIScreen.main.bounds.width - 32, height: frame.height))
     }
     
     func commonInit() {
-        transformView = UIView()
-        transformView.backgroundColor = UIColor.white
-        transformView.layer.cornerRadius = 10
-        transformView.layer.shadowColor = UIColor.black.cgColor
-        transformView.layer.shadowRadius = 5
-        transformView.layer.shadowOpacity = 0.1
+//        transformView = UIView()
+        contentView.backgroundColor = UIColor.white
+        contentView.layer.cornerRadius = 10
+        contentView.layer.shadowColor = UIColor.black.cgColor
+        contentView.layer.shadowRadius = 5
+        contentView.layer.shadowOpacity = 0.1
         pan = UIPanGestureRecognizer(target: self, action: #selector(panItem(_:)))
         pan.delegate = self
-        transformView.isUserInteractionEnabled = true
-        transformView.addGestureRecognizer(pan)
-        addSubview(transformView)
+        contentView.isUserInteractionEnabled = true
+        contentView.addGestureRecognizer(pan)
     }
     
     func panItem(_ gesture: UILongPressGestureRecognizer) {
@@ -45,24 +44,26 @@ class CollectionViewCell: UICollectionViewCell {
         var rotateTransform: CGAffineTransform!
         if delta < 0 {
             // move to left
+            contentView.layer.anchorPoint = CGPoint(x:0,y:1)
             rotateTransform = CGAffineTransform(rotationAngle: -CGFloat(M_PI / 12) * percent)
         } else {
+            contentView.layer.anchorPoint = CGPoint(x:1,y:1)
             rotateTransform = CGAffineTransform(rotationAngle: CGFloat(M_PI / 12) * percent)
         }
         let scaleTransform = CGAffineTransform(scaleX: scale, y: scale)
         let moveTransform = CGAffineTransform(translationX: delta, y: 0)
         let transforms = scaleTransform.concatenating(rotateTransform).concatenating(moveTransform)
-        transformView.transform = transforms
-        transformView.alpha = 1 - percent
+        contentView.transform = transforms
+        contentView.alpha = 1 - percent
         if gesture.state == .ended {
             if percent > 0.5 {
                 removeItem()
-                transformView.alpha = 0
-                transformView.transform = CGAffineTransform.identity
+                contentView.alpha = 0
+                contentView.transform = CGAffineTransform.identity
             } else {
                 UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseInOut, animations: { 
-                    self.transformView.transform = CGAffineTransform.identity
-                    self.transformView.alpha = 1
+                    self.contentView.transform = CGAffineTransform.identity
+                    self.contentView.alpha = 1
                 })
             }
         }

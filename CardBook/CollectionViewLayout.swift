@@ -17,12 +17,17 @@ class CollectionViewLayout: UICollectionViewFlowLayout {
     override func prepare() {
         super.prepare()
         cellCount = collectionView!.numberOfItems(inSection: 0)
-        collectionView!.contentInset = UIEdgeInsets(top: margin * CGFloat(visibleCount), left: 0, bottom: 0, right: 0)
         maxHeight = itemSize.height / 3
     }
     
     override var collectionViewContentSize: CGSize {
-        return CGSize(width: collectionView!.frame.width, height: collectionView!.frame.height + CGFloat(cellCount - visibleCount) * margin)
+        var n: Int!
+        if cellCount < visibleCount {
+            n = cellCount
+        } else {
+            n = cellCount - visibleCount
+        }
+        return CGSize(width: collectionView!.frame.width, height: collectionView!.frame.height + CGFloat(n) * margin)
     }
     
     override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
@@ -37,6 +42,12 @@ class CollectionViewLayout: UICollectionViewFlowLayout {
     
     override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
         let attributes = UICollectionViewLayoutAttributes(forCellWith: indexPath)
+        print(collectionView!.contentOffset.y)
+        if collectionView!.contentOffset.y >= 0 {
+            collectionView!.contentInset = .zero
+        } else {
+            collectionView!.contentInset = UIEdgeInsets(top: CGFloat(visibleCount) * margin, left: 0, bottom: 0, right: 0)
+        }
         attributes.size = itemSize
         let baseCenterY = itemSize.height / 2 + CGFloat(indexPath.row) * margin
         var centerY = baseCenterY
@@ -67,6 +78,7 @@ class CollectionViewLayout: UICollectionViewFlowLayout {
         }
         attributes.transform = CGAffineTransform(scaleX: scale, y: scale)
         attributes.center = CGPoint(x: collectionView!.frame.width / 2, y: centerY)
+        
         return attributes
     }
     
