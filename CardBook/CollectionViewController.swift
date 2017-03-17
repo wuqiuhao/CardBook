@@ -8,6 +8,20 @@
 
 import UIKit
 
+extension UIView {
+    var viewController: UIViewController? {
+        let next = superview
+        while next != nil {
+            if let nextResponder = next?.next {
+                if let vc = nextResponder as? UIViewController {
+                    return vc
+                }
+            }
+        }
+        return nil
+    }
+}
+
 private let reuseIdentifier = "Cell"
 
 class CollectionViewCell: UICollectionViewCell {
@@ -19,21 +33,22 @@ class CollectionViewCell: UICollectionViewCell {
     var pan: UIPanGestureRecognizer!
     
     func config() {
-//        transformView.alpha = 1
-//        transformView.frame = CGRect(origin: .zero, size: CGSize(width: UIScreen.main.bounds.width - 32, height: frame.height))
+        transformView.alpha = 1
+        transformView.frame = CGRect(origin: .zero, size: CGSize(width: UIScreen.main.bounds.width - 32, height: frame.height))
     }
     
     func commonInit() {
-//        transformView = UIView()
-        contentView.backgroundColor = UIColor.white
-        contentView.layer.cornerRadius = 10
-        contentView.layer.shadowColor = UIColor.black.cgColor
-        contentView.layer.shadowRadius = 5
-        contentView.layer.shadowOpacity = 0.1
+        transformView = UIView()
+        transformView.backgroundColor = UIColor.white
+        transformView.layer.cornerRadius = 10
+        transformView.layer.shadowColor = UIColor.black.cgColor
+        transformView.layer.shadowRadius = 5
+        transformView.layer.shadowOpacity = 0.1
         pan = UIPanGestureRecognizer(target: self, action: #selector(panItem(_:)))
         pan.delegate = self
-        contentView.isUserInteractionEnabled = true
-//        contentView.addGestureRecognizer(pan)
+        transformView.isUserInteractionEnabled = true
+        transformView.addGestureRecognizer(pan)
+        addSubview(transformView)
     }
     
     func panItem(_ gesture: UILongPressGestureRecognizer) {
@@ -44,26 +59,26 @@ class CollectionViewCell: UICollectionViewCell {
         var rotateTransform: CGAffineTransform!
         if delta < 0 {
             // move to left
-            contentView.layer.anchorPoint = CGPoint(x:0,y:1)
+            transformView.layer.anchorPoint = CGPoint(x:0,y:1)
             rotateTransform = CGAffineTransform(rotationAngle: -CGFloat(M_PI / 12) * percent)
         } else {
-            contentView.layer.anchorPoint = CGPoint(x:1,y:1)
+            transformView.layer.anchorPoint = CGPoint(x:1,y:1)
             rotateTransform = CGAffineTransform(rotationAngle: CGFloat(M_PI / 12) * percent)
         }
         let scaleTransform = CGAffineTransform(scaleX: scale, y: scale)
         let moveTransform = CGAffineTransform(translationX: delta, y: 0)
         let transforms = scaleTransform.concatenating(rotateTransform).concatenating(moveTransform)
-        contentView.transform = transforms
-        contentView.alpha = 1 - percent
+        transformView.transform = transforms
+        transformView.alpha = 1 - percent
         if gesture.state == .ended {
             if percent > 0.5 {
                 removeItem()
-                contentView.alpha = 0
-                contentView.transform = CGAffineTransform.identity
+                transformView.alpha = 0
+                transformView.transform = CGAffineTransform.identity
             } else {
                 UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseInOut, animations: { 
-                    self.contentView.transform = CGAffineTransform.identity
-                    self.contentView.alpha = 1
+                    self.transformView.transform = CGAffineTransform.identity
+                    self.transformView.alpha = 1
                 })
             }
         }
@@ -103,10 +118,10 @@ class CollectionViewController: UIViewController {
         let cardLayout = CollectionViewLayout()
         cardLayout.itemSize = CGSize(width: UIScreen.main.bounds.width - 32, height: 1.4*(UIScreen.main.bounds.width - 32))
         collectionView!.setCollectionViewLayout(cardLayout, animated: true)
-        collectionView!.scrollToItem(at: IndexPath(row: collectionView!.numberOfItems(inSection: 0) - 1, section: 0), at: .bottom, animated: false)
+//        collectionView!.scrollToItem(at: IndexPath(row: 0, section: 0), at: .bottom, animated: false)
         panGsture = UIPanGestureRecognizer(target: self, action: #selector(pan(_:)))
         panGsture.delegate = self
-        collectionView.addGestureRecognizer(panGsture)
+//        collectionView.addGestureRecognizer(panGsture)
     }
     
     func pan(_ gesture: UIPanGestureRecognizer) {
@@ -118,7 +133,7 @@ class CollectionViewController: UIViewController {
             let indexPath = collectionView.indexPath(for: cell) else {
                 return
         }
-        collectionView.layoutAttributesForItem(at: indexPath)
+        collectionView.collectionViewLayout.layoutAttributesForItem(at: indexPath)
     }
 }
 
@@ -143,7 +158,7 @@ extension CollectionViewController: UICollectionViewDataSource, UICollectionView
     
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return dataArray.count
+        return 10
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -155,7 +170,6 @@ extension CollectionViewController: UICollectionViewDataSource, UICollectionView
             collectionView.deleteItems(at: [indexPath])
             collectionView.reloadSections([indexPath.section])
         }
-        print(cell.frame)
         return cell
     }
     
