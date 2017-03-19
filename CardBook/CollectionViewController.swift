@@ -47,7 +47,7 @@ class CollectionViewCell: UICollectionViewCell {
         pan = UIPanGestureRecognizer(target: self, action: #selector(panItem(_:)))
         pan.delegate = self
         transformView.isUserInteractionEnabled = true
-        transformView.addGestureRecognizer(pan)
+//        transformView.addGestureRecognizer(pan)
         addSubview(transformView)
     }
     
@@ -116,9 +116,9 @@ class CollectionViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         let cardLayout = CollectionViewLayout()
-        cardLayout.itemSize = CGSize(width: UIScreen.main.bounds.width - 32, height: 1.4*(UIScreen.main.bounds.width - 32))
+        cardLayout.itemSize = CGSize(width: UIScreen.main.bounds.width - 32, height: 1.4 * (UIScreen.main.bounds.width - 32))
         collectionView!.setCollectionViewLayout(cardLayout, animated: true)
-//        collectionView!.scrollToItem(at: IndexPath(row: 0, section: 0), at: .bottom, animated: false)
+        cardLayout.config()
         panGsture = UIPanGestureRecognizer(target: self, action: #selector(pan(_:)))
         panGsture.delegate = self
 //        collectionView.addGestureRecognizer(panGsture)
@@ -158,7 +158,7 @@ extension CollectionViewController: UICollectionViewDataSource, UICollectionView
     
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 10
+        return 8
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {

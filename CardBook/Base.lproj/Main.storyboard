@@ -22,7 +22,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <collectionView multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="UUG-st-H8f">
-                                <rect key="frame" x="0.0" y="100" width="375" height="567"/>
+                                <rect key="frame" x="0.0" y="84" width="375" height="583"/>
                                 <color key="backgroundColor" red="0.30980392159999998" green="0.76470588240000004" blue="0.96862745100000003" alpha="1" colorSpace="calibratedRGB"/>
                                 <collectionViewLayout key="collectionViewLayout" id="BNA-kI-b8l"/>
                                 <cells>
@@ -47,7 +47,7 @@
                             <constraint firstAttribute="trailing" secondItem="UUG-st-H8f" secondAttribute="trailing" id="Orm-TR-rlp"/>
                             <constraint firstItem="0LH-zz-UDT" firstAttribute="top" secondItem="UUG-st-H8f" secondAttribute="bottom" id="TwX-Zc-aNz"/>
                             <constraint firstItem="UUG-st-H8f" firstAttribute="leading" secondItem="gmP-es-5Oc" secondAttribute="leading" id="bEv-wR-DRd"/>
-                            <constraint firstItem="UUG-st-H8f" firstAttribute="top" secondItem="gmP-es-5Oc" secondAttribute="top" constant="100" id="osl-k0-0FB"/>
+                            <constraint firstItem="UUG-st-H8f" firstAttribute="top" secondItem="gmP-es-5Oc" secondAttribute="top" constant="84" id="osl-k0-0FB"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="CardBook" id="2KH-bw-Pqr"/>
