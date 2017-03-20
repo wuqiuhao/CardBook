@@ -47,7 +47,7 @@ class CollectionViewCell: UICollectionViewCell {
         pan = UIPanGestureRecognizer(target: self, action: #selector(panItem(_:)))
         pan.delegate = self
         transformView.isUserInteractionEnabled = true
-//        transformView.addGestureRecognizer(pan)
+        transformView.addGestureRecognizer(pan)
         addSubview(transformView)
     }
     
@@ -59,10 +59,8 @@ class CollectionViewCell: UICollectionViewCell {
         var rotateTransform: CGAffineTransform!
         if delta < 0 {
             // move to left
-            transformView.layer.anchorPoint = CGPoint(x:0,y:1)
             rotateTransform = CGAffineTransform(rotationAngle: -CGFloat(M_PI / 12) * percent)
         } else {
-            transformView.layer.anchorPoint = CGPoint(x:1,y:1)
             rotateTransform = CGAffineTransform(rotationAngle: CGFloat(M_PI / 12) * percent)
         }
         let scaleTransform = CGAffineTransform(scaleX: scale, y: scale)
@@ -76,7 +74,7 @@ class CollectionViewCell: UICollectionViewCell {
                 transformView.alpha = 0
                 transformView.transform = CGAffineTransform.identity
             } else {
-                UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseInOut, animations: { 
+                UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseInOut, animations: {
                     self.transformView.transform = CGAffineTransform.identity
                     self.transformView.alpha = 1
                 })
@@ -110,7 +108,6 @@ extension CollectionViewCell: UIGestureRecognizerDelegate {
 class CollectionViewController: UIViewController {
     
     @IBOutlet weak var collectionView: UICollectionView!
-    var panGsture: UIPanGestureRecognizer!
     var dataArray = [9,8,7,6,5,4,3,2,1,0]
     
     override func viewDidLoad() {
@@ -119,36 +116,8 @@ class CollectionViewController: UIViewController {
         cardLayout.itemSize = CGSize(width: UIScreen.main.bounds.width - 32, height: 1.4 * (UIScreen.main.bounds.width - 32))
         collectionView!.setCollectionViewLayout(cardLayout, animated: true)
         cardLayout.config()
-        panGsture = UIPanGestureRecognizer(target: self, action: #selector(pan(_:)))
-        panGsture.delegate = self
-//        collectionView.addGestureRecognizer(panGsture)
-    }
-    
-    func pan(_ gesture: UIPanGestureRecognizer) {
-        let point = gesture.location(in: collectionView)
-        guard let gestureView = gesture.view,
-            let hintView = gestureView.hitTest(point, with: nil),
-            let superview = hintView.superview,
-            let cell = superview as? UICollectionViewCell,
-            let indexPath = collectionView.indexPath(for: cell) else {
-                return
-        }
-        collectionView.collectionViewLayout.layoutAttributesForItem(at: indexPath)
     }
 }
-
-extension CollectionViewController: UIGestureRecognizerDelegate {
-    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        if gestureRecognizer == panGsture {
-            let transition = panGsture.translation(in: view)
-            if abs(transition.x) > abs(transition.y) {
-                return true
-            }
-        }
-        return false
-    }
-}
-
 
 // MARK: - UICollectionViewDataSource & UICollectionViewDelegate
 extension CollectionViewController: UICollectionViewDataSource, UICollectionViewDelegate {
@@ -158,7 +127,7 @@ extension CollectionViewController: UICollectionViewDataSource, UICollectionView
     
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 8
+        return 3
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -168,7 +137,6 @@ extension CollectionViewController: UICollectionViewDataSource, UICollectionView
             self.dataArray.remove(at: indexPath.row)
             print("Did remove item \(indexPath.row).")
             collectionView.deleteItems(at: [indexPath])
-            collectionView.reloadSections([indexPath.section])
         }
         return cell
     }

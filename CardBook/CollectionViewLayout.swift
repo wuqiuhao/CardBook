@@ -18,9 +18,17 @@ class CollectionViewLayout: UICollectionViewFlowLayout {
     var maxMargin: CGFloat!
     var marginNum: Int!
     var delta: CGFloat!
+    var minIndex: Int!
     
     func config() {
+        collectionView!.scrollToItem(at: IndexPath(row: collectionView!.numberOfItems(inSection: 0) - 1, section: 0), at: .bottom, animated: false)
+        collectionView!.setContentOffset(CGPoint(x: 0, y: collectionView!.contentOffset.y + delta), animated: false)
+    }
+    
+    override func prepare() {
+        super.prepare()
         cellCount = collectionView!.numberOfItems(inSection: 0)
+        minIndex = cellCount
         maxMargin = itemSize.height / 3
         let h = collectionView!.frame.height - itemSize.height
         if cellCount > visibleCount {
@@ -30,8 +38,6 @@ class CollectionViewLayout: UICollectionViewFlowLayout {
         }
         let d = CGFloat(marginNum) * minMargin
         delta = h - d
-        collectionView!.scrollToItem(at: IndexPath(row: collectionView!.numberOfItems(inSection: 0) - 1, section: 0), at: .bottom, animated: false)
-        collectionView!.setContentOffset(CGPoint(x: 0, y: collectionView!.contentOffset.y + delta), animated: false)
     }
     
     override var collectionViewContentSize: CGSize {
@@ -40,8 +46,10 @@ class CollectionViewLayout: UICollectionViewFlowLayout {
     
     override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
         var array = [UICollectionViewLayoutAttributes]()
+        let start = 0
+        let end = cellCount!
         
-        for i in 0..<cellCount {
+        for i in start..<end {
             let indexPath = IndexPath(item: i, section: 0)
             let attributes = layoutAttributesForItem(at: indexPath)!
             array.append(attributes)
@@ -70,24 +78,28 @@ class CollectionViewLayout: UICollectionViewFlowLayout {
             i = 0
         }
         let minCenterY = CGFloat(i) * minMargin + itemSize.height / 2 + offsetY
-        let cellBaseScale = 0.9 + (CGFloat(i) * minMargin) / (CGFloat(marginNum) * minMargin) * 0.1
-
+        let cellBaseScale = 0.95 + (CGFloat(i) * minMargin) / (CGFloat(marginNum) * minMargin) * 0.05
+        
         // offsetY
         var x = dy / itemSize.height * 3
         if x < 0 { x = 0 }
-        centerY = itemSize.height / 2 + (40) * pow(x, 2) + (160 / 3) * x + offsetY
-        
+        centerY = itemSize.height / 2 + (80 / 3) * pow(x, 2) + (160 / 3) * x + offsetY
 
-        print("centerY:\(centerY - itemSize.height / 2 - offsetY) row:\(indexPath.row)")
         // 上拉超过一定位置不移动
-        if centerY <= minCenterY {
+        if centerY < minCenterY {
             centerY = minCenterY
         }
         
+        let hideIndex = Int(offsetY / 160)
+        if visibleCount < cellCount && indexPath.row < cellCount - visibleCount {
+            if indexPath.row < hideIndex {
+                attributes.alpha = 0
+            }
+        }
+        
         // scale
-        var k = dy / 30
-        if k > 1 { k = 1 }
-        var scale = 0.9 + x * 0.1
+        if x > 1 { x = 1 }
+        var scale = 0.95 + x * 0.05
         if scale < cellBaseScale {
             scale = cellBaseScale
         }

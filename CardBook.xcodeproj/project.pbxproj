@@ -13,6 +13,7 @@
 		EF7936D11E70368900FCD9EB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EF7936D01E70368900FCD9EB /* Assets.xcassets */; };
 		EF7936D41E70368900FCD9EB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EF7936D21E70368900FCD9EB /* LaunchScreen.storyboard */; };
 		EF7936DC1E7036D800FCD9EB /* CollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF7936DB1E7036D800FCD9EB /* CollectionViewController.swift */; };
+		EFBFCD171E80150F00D5C77C /* CardLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFBFCD161E80150F00D5C77C /* CardLayout.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +25,7 @@
 		EF7936D31E70368900FCD9EB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		EF7936D51E70368900FCD9EB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EF7936DB1E7036D800FCD9EB /* CollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewController.swift; sourceTree = "<group>"; };
+		EFBFCD161E80150F00D5C77C /* CardLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardLayout.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +65,7 @@
 				EF7936D01E70368900FCD9EB /* Assets.xcassets */,
 				EF7936D21E70368900FCD9EB /* LaunchScreen.storyboard */,
 				EF7936D51E70368900FCD9EB /* Info.plist */,
+				EFBFCD161E80150F00D5C77C /* CardLayout.swift */,
 			);
 			path = CardBook;
 			sourceTree = "<group>";
@@ -143,6 +146,7 @@
 				EF23F9891E75537E00D7414E /* CollectionViewLayout.swift in Sources */,
 				EF7936DC1E7036D800FCD9EB /* CollectionViewController.swift in Sources */,
 				EF7936CA1E70368900FCD9EB /* AppDelegate.swift in Sources */,
+				EFBFCD171E80150F00D5C77C /* CardLayout.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
