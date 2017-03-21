@@ -112,9 +112,8 @@ class CollectionViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        let cardLayout = CollectionViewLayout()
+        let cardLayout = collectionView!.collectionViewLayout as! CollectionViewLayout
         cardLayout.itemSize = CGSize(width: UIScreen.main.bounds.width - 32, height: 1.4 * (UIScreen.main.bounds.width - 32))
-        collectionView!.setCollectionViewLayout(cardLayout, animated: true)
         cardLayout.config()
     }
 }
@@ -127,7 +126,7 @@ extension CollectionViewController: UICollectionViewDataSource, UICollectionView
     
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 3
+        return 10
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {

@@ -19,15 +19,19 @@ class CollectionViewLayout: UICollectionViewFlowLayout {
     var marginNum: Int!
     var delta: CGFloat!
     var minIndex: Int!
+    var top: CGFloat = 0
     
     func config() {
         collectionView!.scrollToItem(at: IndexPath(row: collectionView!.numberOfItems(inSection: 0) - 1, section: 0), at: .bottom, animated: false)
-        collectionView!.setContentOffset(CGPoint(x: 0, y: collectionView!.contentOffset.y + delta), animated: false)
+        collectionView!.setContentOffset(CGPoint(x: 0, y: collectionView!.contentOffset.y + delta + top), animated: false)
     }
     
     override func prepare() {
         super.prepare()
         cellCount = collectionView!.numberOfItems(inSection: 0)
+        if cellCount > 1 && cellCount < 4 {
+            top = 60
+        }
         minIndex = cellCount
         maxMargin = itemSize.height / 3
         let h = collectionView!.frame.height - itemSize.height
@@ -98,8 +102,10 @@ class CollectionViewLayout: UICollectionViewFlowLayout {
         }
         
         // scale
-        if x > 1 { x = 1 }
-        var scale = 0.95 + x * 0.05
+        var k = (dy + 120) / itemSize.height * 3
+        if k < 0 { k = 0 }
+        if k > 1 { k = 1 }
+        var scale = 0.95 + k * 0.05
         if scale < cellBaseScale {
             scale = cellBaseScale
         }
