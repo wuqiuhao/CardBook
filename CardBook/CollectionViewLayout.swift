@@ -33,7 +33,7 @@ class CollectionViewLayout: UICollectionViewFlowLayout {
             top = 60
         }
         minIndex = cellCount
-        maxMargin = itemSize.height / 3
+        maxMargin = itemSize.height / 2
         let h = collectionView!.frame.height - itemSize.height
         if cellCount > visibleCount {
             marginNum = visibleCount - 1
@@ -63,6 +63,7 @@ class CollectionViewLayout: UICollectionViewFlowLayout {
     
     override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
         let offsetY = collectionView!.contentOffset.y
+        print(offsetY)
         if offsetY < 0 {
             collectionView!.contentInset = UIEdgeInsets(top: 30, left: 0, bottom: 0, right: 0)
         }
@@ -94,7 +95,7 @@ class CollectionViewLayout: UICollectionViewFlowLayout {
             centerY = minCenterY
         }
         
-        let hideIndex = Int(offsetY / 160)
+        let hideIndex = Int(offsetY / maxMargin)
         if visibleCount < cellCount && indexPath.row < cellCount - visibleCount {
             if indexPath.row < hideIndex {
                 attributes.alpha = 0
