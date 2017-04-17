@@ -59,9 +59,9 @@ class CollectionViewCell: UICollectionViewCell {
         var rotateTransform: CGAffineTransform!
         if delta < 0 {
             // move to left
-            rotateTransform = CGAffineTransform(rotationAngle: -CGFloat(M_PI / 12) * percent)
+            rotateTransform = CGAffineTransform(rotationAngle: -.pi / 12 * percent)
         } else {
-            rotateTransform = CGAffineTransform(rotationAngle: CGFloat(M_PI / 12) * percent)
+            rotateTransform = CGAffineTransform(rotationAngle: .pi / 12 * percent)
         }
         let scaleTransform = CGAffineTransform(scaleX: scale, y: scale)
         let moveTransform = CGAffineTransform(translationX: delta, y: 0)
@@ -136,6 +136,7 @@ extension CollectionViewController: UICollectionViewDataSource, UICollectionView
             self.dataArray.remove(at: indexPath.row)
             print("Did remove item \(indexPath.row).")
             collectionView.deleteItems(at: [indexPath])
+            collectionView.reloadSections([indexPath.section])
         }
         return cell
     }
