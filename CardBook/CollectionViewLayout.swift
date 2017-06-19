@@ -45,7 +45,14 @@ class CollectionViewLayout: UICollectionViewFlowLayout {
         for i in start..<end {
             let indexPath = IndexPath(item: i, section: 0)
             let attributes = layoutAttributesForItem(at: indexPath)!
-            array.append(attributes)
+            if attributes.alpha == 1 {
+                array.append(attributes)
+            }
+            if array.count == visibleCount + 1 {
+                break
+            } else {
+                continue
+            }
         }
         return array
     }
