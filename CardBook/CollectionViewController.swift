@@ -40,7 +40,7 @@ class CollectionViewCell: UICollectionViewCell {
     func commonInit() {
         transformView = UIView()
         transformView.backgroundColor = UIColor.white
-        transformView.layer.cornerRadius = 2
+        transformView.layer.cornerRadius = 6
         transformView.layer.shadowColor = UIColor.black.cgColor
         transformView.layer.shadowRadius = 5
         transformView.layer.shadowOpacity = 0.1
